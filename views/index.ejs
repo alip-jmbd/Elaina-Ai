@@ -5,11 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elaina Chan AI</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <link rel="icon" href="/img/elaina-logo.png" type="image/png">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.45/moment-timezone-with-data.min.js"></script>
 </head>
 <body>
     <div id="overlay"></div>
+
+    <div id="media-preview-modal" class="modal">
+        <span class="close-modal-btn">&times;</span>
+        <div id="media-modal-content"></div>
+    </div>
+    
+    <div id="code-modal" class="modal">
+        <span class="close-modal-btn">&times;</span>
+        <div id="code-modal-content"></div>
+    </div>
 
     <div id="custom-confirm" class="modal">
         <div class="modal-content">
@@ -26,7 +40,7 @@
             <h3>History</h3>
         </div>
         <div class="sidebar-content">
-            <button id="new-chat-btn">New Chat</button>
+            <button id="new-chat-btn">+ New Chat</button>
             <ul id="history-list"></ul>
         </div>
     </div>
@@ -65,15 +79,15 @@
     <div id="app-container">
         <header>
             <button id="history-btn" class="header-btn">
-                <img src="/svg/arrow-right.svg" alt="History">
+                <img src="/svg/history.svg" alt="History">
             </button>
-            <h1>Elaina AI</h1>
             <button id="settings-btn" class="header-btn">
-                <img src="/svg/menu.svg" alt="Settings">
+                <img src="/svg/settings.svg" alt="Settings">
             </button>
         </header>
 
         <main id="chat-container">
+            <!-- Dynamic content will be loaded here by JS -->
         </main>
 
         <footer>
