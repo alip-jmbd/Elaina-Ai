@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elaina Chan AI</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+    <div id="overlay"></div>
+
+    <div id="custom-confirm" class="modal">
+        <div class="modal-content">
+            <p id="confirm-msg">Apakah Anda yakin?</p>
+            <div class="modal-buttons">
+                <button id="confirm-cancel-btn">Batal</button>
+                <button id="confirm-ok-btn">Hapus</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-sidebar" class="sidebar left">
+        <div class="sidebar-header">
+            <h3>History</h3>
+        </div>
+        <div class="sidebar-content">
+            <button id="new-chat-btn">New Chat</button>
+            <ul id="history-list"></ul>
+        </div>
+    </div>
+
+    <div id="settings-sidebar" class="sidebar right">
+        <a href="javascript:void(0)" class="close-btn" id="close-settings-btn">&times;</a>
+        <div class="sidebar-header">
+            <h3>Settings</h3>
+        </div>
+        <div class="sidebar-content">
+            <div class="setting-item">
+                <label for="model-select">Witch's Grimoire</label>
+                <div class="custom-select">
+                    <select id="model-select">
+                        <option value="gemini-2.0-flash" selected>Elaina - Swift Witch</option>
+                        <option value="gemini-2.5-flash">Ashen Witch - Grand Tour</option>
+                    </select>
+                </div>
+            </div>
+            <div class="setting-item">
+                <label for="system-instruction">System Instruction</label>
+                <textarea id="system-instruction" rows="8"></textarea>
+            </div>
+            <div class="setting-item">
+                <label class="toggle-label">
+                    <span>Grounding Search</span>
+                    <label class="switch">
+                        <input type="checkbox" id="grounding-toggle-sidebar">
+                        <span class="slider round"></span>
+                    </label>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <header>
+            <button id="history-btn" class="header-btn">
+                <img src="/svg/arrow-right.svg" alt="History">
+            </button>
+            <h1>Elaina AI</h1>
+            <button id="settings-btn" class="header-btn">
+                <img src="/svg/menu.svg" alt="Settings">
+            </button>
+        </header>
+
+        <main id="chat-container">
+        </main>
+
+        <footer>
+            <div id="file-preview-container"></div>
+            <div id="input-area">
+                <textarea id="message-input" placeholder="Ketik pesanmu..." rows="1"></textarea>
+                <div id="input-toolbar">
+                    <div class="toolbar-left">
+                        <label for="file-input" class="toolbar-btn">
+                            <img src="/svg/paperclip.svg" alt="Attach">
+                        </label>
+                        <input type="file" id="file-input" multiple hidden>
+                        <button id="grounding-toggle-btn" class="toolbar-btn pill">
+                            <img src="/svg/globe.svg" alt="Search">
+                            <span>Search</span>
+                        </button>
+                    </div>
+                    <div class="toolbar-right">
+                        <button id="send-btn" class="toolbar-btn">
+                            <img src="/svg/send.svg" alt="Send">
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>

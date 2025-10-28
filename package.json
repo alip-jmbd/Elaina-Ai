@@ -1,0 +1,17 @@
+{
+  "name": "elaina-chan-ai",
+  "version": "1.0.0",
+  "description": "Chat AI personal dengan model Gemini.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "latest",
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "marked": "^13.0.0"
+  }
+}
