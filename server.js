@@ -1,8 +1,6 @@
 const express = require('express');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const multer = require('multer');
 const path = require('path');
-const { Octokit } = require('@octokit/rest');
 require('dotenv').config();
 
 const app = express();
@@ -25,73 +23,49 @@ const getNextApiKey = () => {
     return key;
 };
 
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-const gistId = process.env.GIST_ID;
-const gistFilename = process.env.GIST_FILENAME;
-
-const readFromGist = async () => {
-    try {
-        const gist = await octokit.gists.get({ gist_id: gistId });
-        const content = gist.data.files[gistFilename]?.content;
-        return content ? JSON.parse(content) : {};
-    } catch (error) {
-        console.error("Error reading from Gist:", error);
-        return {};
-    }
-};
-
-const writeToGist = async (data) => {
-    try {
-        await octokit.gists.update({
-            gist_id: gistId,
-            files: {
-                [gistFilename]: {
-                    content: JSON.stringify(data, null, 2),
-                },
-            },
-        });
-    } catch (error) {
-        console.error("Error writing to Gist:", error);
-    }
-};
-
 app.get('/', (req, res) => {
     res.render('index');
 });
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 25 * 1024 * 1024 } });
-
-const fileToGenerativePart = (file) => {
-    return {
-        inlineData: {
-            data: file.buffer.toString("base64"),
-            mimeType: file.mimetype,
-        },
-    };
-};
-
-app.post('/chat', upload.array('files', 5), async (req, res) => {
+app.post('/chat', async (req, res) => {
+    let apiKey;
     try {
-        const apiKey = getNextApiKey();
+        apiKey = getNextApiKey();
         const genAI = new GoogleGenerativeAI(apiKey);
+        const { history, message, settings, files: bodyFiles } = req.body;
 
-        const { history, message, settings } = req.body;
+        const transformedHistory = (history || []).map(entry => {
+            return {
+                ...entry,
+                parts: entry.parts.map(part => {
+                    if (part.file && part.file.data && !part.text) {
+                        return {
+                            inlineData: {
+                                mimeType: part.file.mimeType,
+                                data: part.file.data.split(',')[1]
+                            }
+                        };
+                    }
+                    return part;
+                }).filter(Boolean)
+            };
+        });
+
         const model = genAI.getGenerativeModel({
-            model: settings.model || "gemini-1.5-flash",
+            model: settings.model || "gemini-2.0-flash",
             systemInstruction: settings.systemInstruction,
         });
 
         const chat = model.startChat({
-            history: history || [],
+            history: transformedHistory,
             generationConfig: {
-                maxOutputTokens: 2048,
+                maxOutputTokens: 8192,
             },
         });
 
         const parts = [{ text: message }];
-        if (req.body.files && Array.isArray(req.body.files)) {
-            req.body.files.forEach(file => {
+        if (bodyFiles && Array.isArray(bodyFiles)) {
+            bodyFiles.forEach(file => {
                 parts.push({
                     inlineData: {
                         mimeType: file.mimeType,
@@ -111,8 +85,12 @@ app.post('/chat', upload.array('files', 5), async (req, res) => {
         res.json({ text: responseText, groundingMetadata });
 
     } catch (error) {
-        console.error('Error during chat processing:', error);
-        res.status(500).json({ error: error.message });
+        console.error(`Error with API key ending in ...${apiKey ? apiKey.slice(-4) : 'N/A'}:`, error.message);
+        if (error.message.includes('429')) {
+             res.status(429).json({ error: 'Terlalu banyak permintaan, coba lagi sesaat. Sistem akan mencoba kunci API lain secara otomatis.' });
+        } else {
+             res.status(500).json({ error: error.message });
+        }
     }
 });
 
